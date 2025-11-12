@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>Spotify 検索アプリ</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #121212;
+      color: white;
+      text-align: center;
+    }
+    .search-box {
+      margin: 30px;
+    }
+    input[type="text"] {
+      width: 250px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      background: #1DB954;
+      color: white;
+      cursor: pointer;
+    }
+    .track {
+      margin: 20px auto;
+      width: 300px;
+      background: #181818;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Spotify 検索</h1>
+  <div class="search-box">
+    <input type="text" id="query" placeholder="曲名やアーティストを入力..." />
+    <button onclick="search()">検索</button>
+  </div>
+  <div id="results"></div>
+
+  <script>
+    async function search() {
+      const query = document.getElementById('query').value;
+      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+      const tracks = await res.json();
+      const container = document.getElementById('results');
+      container.innerHTML = "";
+
+      if (tracks.error) {
+        container.innerHTML = `<p style="color:red;">${tracks.error}</p>`;
+        return;
+      }
+
+      tracks.forEach(t => {
+        const html = `
+          <div class="track">
+            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+            <h3>${t.name}</h3>
+            <p>${t.artist}</p>
+            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く</a></p>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+  </script>
+</body>
+</html>
