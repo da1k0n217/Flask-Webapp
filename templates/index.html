@@ -72,7 +72,7 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く</a></p>
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
           </div>
         `;
         container.innerHTML += html;
