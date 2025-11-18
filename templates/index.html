@@ -73,10 +73,14 @@
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
             <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+            <button onclick="like()">♡</button>
           </div>
         `;
         container.innerHTML += html;
       });
+    }
+    async function like() {
+      alert("いいね！機能はまだ実装されていません。");
     }
   </script>
 </body>
