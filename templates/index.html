@@ -1,48 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+  <link rel="stylesheet" href="/static/style.css" />
   <meta charset="UTF-8" />
   <title>Spotify 検索アプリ</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #121212;
-      color: white;
-      text-align: center;
-    }
-    .search-box {
-      margin: 30px;
-    }
-    input[type="text"] {
-      width: 250px;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-    }
-    button {
-      padding: 8px 15px;
-      border: none;
-      border-radius: 5px;
-      background: #1DB954;
-      color: white;
-      cursor: pointer;
-    }
-    .track {
-      margin: 20px auto;
-      width: 300px;
-      background: #181818;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    img {
-      width: 100%;
-      border-radius: 10px;
-    }
-    audio {
-      width: 100%;
-      margin-top: 5px;
-    }
-  </style>
 </head>
 <body>
   <h1>Spotify 検索</h1>
@@ -50,12 +11,13 @@
     <input type="text" id="query" placeholder="曲名やアーティストを入力..." />
     <button onclick="search()">検索</button>
   </div>
-  <div id="results"></div>
+  <button onclick="showPopular()">人気の新着アルバム</button>
+  <div id="results" class="results"></div>
 
   <script>
     async function search() {
       const query = document.getElementById('query').value;
-      const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+      const res = await fetch(`/search?q=${encodeURIComponent(query)}`); //ここで検索した内容をapp.pyに送る
       const tracks = await res.json();
       const container = document.getElementById('results');
       container.innerHTML = "";
@@ -73,14 +35,73 @@
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
             <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-            <button onclick="like()">♡</button>
+            <button onclick="like()">❤</button>
           </div>
         `;
         container.innerHTML += html;
       });
     }
-    async function like() {
-      alert("いいね！機能はまだ実装されていません。");
+    
+    async function showPopular() {
+      const res = await fetch('/popular');
+      const albums = await res.json();
+      const container = document.getElementById('results');
+      container.innerHTML = "";
+
+      if (albums.error) {
+        container.innerHTML = `<p style="color:red;">${albums.error}</p>`;
+        return;
+      }
+
+      albums.forEach(t => {
+        const html = `
+          <div class="track">
+            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+            <h3>${t.name}</h3>
+            <p>${t.artist}</p>
+            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+            <button onclick="addFavorite()">❤</button>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+
+        async function addFavorite(track) {
+      try {
+        const res = await fetch('/favorites', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(track)
+        });
+        return await res.json();
+        console.log('successfully added favorite');
+      } catch (e) {
+        console.error('failed to add favorite', e);
+        console.log(track);
+        throw e;
+      }
+    }
+
+    async function removeFavorite(track_id) {
+      try {
+        const res = await fetch(`/favorites/${encodeURIComponent(track_id)}`, { method: 'DELETE' });
+        return res.status === 204;
+      } catch (e) {
+        console.error('failed to remove favorite', e);
+        throw e;
+      }
+    }
+
+    async function fetchFavorites() {
+      try {
+        const res = await fetch('/favorites');
+        return await res.json();
+      } catch (e) {
+        console.error('failed to fetch favorites', e);
+        return [];
+      }
     }
   </script>
 </body>

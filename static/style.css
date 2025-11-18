@@ -1,0 +1,43 @@
+    body {
+      font-family: sans-serif;
+      background-color: #ffffff;
+      color: black;
+      text-align: center;
+    }
+    .search-box {
+      margin: 30px;
+    }
+    input[type="text"] {
+      width: 250px;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 8px 15px;
+      border: none;
+      border-radius: 5px;
+      background: #1DB954;
+      color: white;
+      cursor: pointer;
+    }
+    .track {
+      margin: 20px auto;
+      width: 300px;
+      background: #ffffff;
+      padding: 10px;
+      border-radius: 10px;
+    }
+    img {
+      width: 100%;
+      border-radius: 10px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 5px;
+    }
+    .results {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-flow: row;
+    }
