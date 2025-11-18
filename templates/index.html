@@ -3,18 +3,24 @@
 <head>
   <link rel="stylesheet" href="/static/style.css" />
   <meta charset="UTF-8" />
-  <title>Spotify 検索アプリ</title>
+  <title>ShareMusic</title>
 </head>
 <body>
   <h1>Spotify 検索</h1>
   <div class="search-box">
-    <input type="text" id="query" placeholder="曲名やアーティストを入力..." />
+    <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." />
     <button onclick="search()">検索</button>
   </div>
   <button onclick="showPopular()">人気の新着アルバム</button>
+  <button onclick="showFavorites()">お気に入り一覧</button>
   <div id="results" class="results"></div>
 
   <script>
+
+    window.onload = () => {
+      showPopular();
+    };
+
     async function search() {
       const query = document.getElementById('query').value;
       const res = await fetch(`/search?q=${encodeURIComponent(query)}`); //ここで検索した内容をapp.pyに送る
@@ -34,9 +40,10 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-            <button onclick="like()">❤</button>
-          </div>
+              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+              <button onclick='addFavorite(${JSON.stringify(t)})'>❤</button>
+              <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
+            </div>
         `;
         container.innerHTML += html;
       });
@@ -60,15 +67,42 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-            <button onclick="addFavorite()">❤</button>
-          </div>
+              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+              <button onclick='addFavorite(${JSON.stringify(t)})'>❤</button>
+              <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
+            </div>
         `;
         container.innerHTML += html;
       });
     }
 
-        async function addFavorite(track) {
+    async function showFavorites() {
+      const tracks = await fetchFavorites();
+      const container = document.getElementById('results');
+      container.innerHTML = "";
+
+      if (!tracks || tracks.length === 0) {
+        container.innerHTML = "<p>お気に入りはまだありません。</p>";
+        return;
+      }
+
+      tracks.forEach(t => {
+        const html = `
+          <div class="track">
+            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+            <h3>${t.name}</h3>
+            <p>${t.artist}</p>
+            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+              <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
+              <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
+            </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+
+    async function addFavorite(track) {
       try {
         const res = await fetch('/favorites', {
           method: 'POST',

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Music Player</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Music Player</h1>
+    <div id="player-container">
+        <!-- Spotifyの埋め込みプレーヤーがここに表示されます -->
+    </div>
+    <a href="/">検索ページに戻る</a>
+
+    <script>
+        // URLからtrack_idを取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const trackId = urlParams.get('track_id');
+
+        if (trackId) {
+            const playerContainer = document.getElementById('player-container');
+            const iframe = document.createElement('iframe');
+            iframe.style.borderRadius = "12px";
+            iframe.src = `https://open.spotify.com/embed/track/${trackId}?utm_source=generator`;
+            iframe.width = "100%";
+            iframe.height = "152";
+            iframe.frameBorder = "0";
+            iframe.allowFullscreen = true;
+            iframe.allow = "autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture";
+            iframe.loading = "lazy";
+            
+            playerContainer.innerHTML = ''; // コンテナをクリア
+            playerContainer.appendChild(iframe);
+        } else {
+            document.getElementById('player-container').innerHTML = '<p>再生する曲が選択されていません。</p>';
+        }
+    </script>
+</body>
+</html>

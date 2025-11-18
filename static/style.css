@@ -1,4 +1,4 @@
-    body {
+body {
       font-family: sans-serif;
       background-color: #ffffff;
       color: black;
@@ -20,6 +20,23 @@
       background: #1DB954;
       color: white;
       cursor: pointer;
+    }
+    .button-link {
+      display: inline-block;
+      padding: 8px 12px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      color: #333;
+      text-decoration: none;
+      cursor: pointer;
+      font-family: sans-serif;
+      font-size: 14px;
+      text-align: center;
+    }
+    .button-link:hover {
+      background-color: #e0e0e0;
     }
     .track {
       margin: 20px auto;
