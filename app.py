@@ -82,7 +82,29 @@ def index():
 @app.route('/player')
 def player():
     track_id = request.args.get('track_id')
-    return render_template('player.html', track_id=track_id)
+    if not track_id:
+        return "Track ID is required", 400
+
+    token = get_token()
+    url = f"https://api.spotify.com/v1/tracks/{track_id}"
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code != 200:
+        return "Could not find track", 404
+        
+    item = response.json()
+    track = {
+        "id": item["id"],
+        "name": item["name"],
+        "artist": item["artists"][0]["name"],
+        "preview_url": item["preview_url"],
+        "external_url": item["external_urls"]["spotify"],
+        "image": item["album"]["images"][1]["url"] if item["album"]["images"] else None
+    }
+
+    return render_template('player.html', track=track)
 
 @app.route('/search',methods=["GET"])
 def search():
@@ -91,7 +113,7 @@ def search():
         return jsonify({"error": "No search query provided"}), 400
     
     token = get_token()
-    url = f"https://api.spotify.com/v1/search?q={query}&type=track&limit=50"
+    url = f"https://api.spotify.com/v1/search?q={query}&type=track&market=JP&limit=50"
     headers = {
         "Authorization": f"Bearer {token}"
     }
