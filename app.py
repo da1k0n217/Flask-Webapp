@@ -140,21 +140,44 @@ def search():
 @app.route('/popular', methods=["GET"])
 def popular():
     token = get_token()
-    url = "https://api.spotify.com/v1/browse/new-releases?limit=50"
+    # 1. Get new releases
+    new_releases_url = "https://api.spotify.com/v1/browse/new-releases?limit=20"
     headers = {
         "Authorization": f"Bearer {token}"
     }
-    response = requests.get(url, headers=headers)
-    data = response.json()
+    response = requests.get(new_releases_url, headers=headers)
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to fetch new releases"}), response.status_code
+    
+    new_releases_data = response.json()
+    album_items = new_releases_data.get("albums", {}).get("items", [])
+    if not album_items:
+        return jsonify([])
+
+    # 2. Get all album IDs
+    album_ids = [item['id'] for item in album_items]
+
+    # 3. Get full album details in one request
+    albums_url = f"https://api.spotify.com/v1/albums?ids={','.join(album_ids)}"
+    response = requests.get(albums_url, headers=headers)
+    if response.status_code != 200:
+        return jsonify({"error": "Failed to fetch album details"}), response.status_code
+
+    albums_data = response.json()
     albums = []
 
-    for item in data.get("albums", {}).get("items", []):
+    for album_detail in albums_data.get('albums', []):
+        track_id = None
+        if album_detail.get('tracks', {}).get('items'):
+            track_id = album_detail['tracks']['items'][0]['id']
+
         albums.append({
-            "id": item["id"],
-            "name": item["name"],
-            "artist": item["artists"][0]["name"],
-            "external_url": item["external_urls"]["spotify"],
-            "image": item["images"][1]["url"] if item["images"] else None
+            "id": album_detail["id"],
+            "track_id": track_id,
+            "name": album_detail["name"],
+            "artist": album_detail["artists"][0]["name"],
+            "external_url": album_detail["external_urls"]["spotify"],
+            "image": album_detail["images"][0]["url"] if album_detail["images"] else None
         })
 
     return jsonify(albums)
