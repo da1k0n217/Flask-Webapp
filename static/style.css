@@ -52,9 +52,10 @@ body {
       font-size: 14px;
       text-align: center;
       border: 1px solid rgba(255,255,255,0.04);
+      transition: background-color 300ms ease;
     }
     .button-link:hover {
-      background-color: rgba(255,255,255,0.04);
+      background-color: rgba(1,1,1,0.6);
     }
     .track {
       margin: 20px auto;
@@ -67,6 +68,10 @@ body {
       padding: 12px;
       border-radius: 10px;
       box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+    }
+    .track:hover {
+      scale: 0.98;
+      transition: scale 140ms ease-in-out;
     }
 
     .track h3 {
@@ -266,8 +271,8 @@ body {
     /* Home icon fixed to left edge */
     .home-link {
       position: fixed;
-      left: 12px;
-      bottom: 26px;
+      left: 30px;
+      top: 30px;
       width: 44px;
       height: 44px;
       display: inline-flex;
@@ -278,8 +283,13 @@ body {
       box-shadow: 0 8px 20px rgba(0,0,0,0.6);
       z-index: 1100;
       text-decoration: none;
-      transition: transform 140ms ease, box-shadow 140ms ease;
+      transition: background 140ms ease, box-shadow 140ms ease;
     }
     .home-link svg { display: block; }
-    .home-link:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0,0,0,0.7); }
+    .home-link:hover { background: #1e90ff; }
     .home-link svg path { fill: #fff !important; }
+
+    .icon {
+      width: 300px;
+      height: 100px;
+    }
