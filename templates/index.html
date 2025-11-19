@@ -163,7 +163,7 @@
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
               <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
               <button onclick='addFavorite(${JSON.stringify(t)})'>❤</button>
-              <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
+              <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
             </div>
         `;
         container.innerHTML += html;
