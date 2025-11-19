@@ -32,7 +32,9 @@
   </style>
 </head>
 <body>
-  <h1>Spotify 検索</h1>
+  <h1>
+    <a href="#" onclick="resetQueryAndShowPopular(); return false;" style="color: inherit; text-decoration: none; cursor: pointer;">Spotify 検索</a>
+  </h1>
   <div class="search-box">
     <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." autocomplete="off" />
     <button onclick="search()">検索</button>
@@ -230,6 +232,14 @@
         console.error('failed to fetch favorites', e);
         return [];
       }
+    }
+
+    // Spotify 検索クリック時に検索欄をリセットして人気新着アルバムを表示し、履歴も非表示にする
+    function resetQueryAndShowPopular() {
+      input.value = '';
+      historyDiv.style.display = 'none';
+      historyDiv.innerHTML = '';
+      showPopular();
     }
   </script>
 </body>
