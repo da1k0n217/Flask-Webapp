@@ -258,7 +258,7 @@ body {
       padding: 0;
     }
     .favorite-btn .heart-shape {
-      color: var(--accent);
+      color: #07110a;
       font-size: 20px;
       pointer-events: none;
     }

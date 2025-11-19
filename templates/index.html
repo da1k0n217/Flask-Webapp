@@ -6,8 +6,9 @@
   <title>ShareMusic</title>
   <style>
     .history-list {
-      background: #fff;
-      border: 1px solid #ccc;
+      color: var(--text);
+      background: rgba(17,18,19,0.6);
+      border: 1px solid rgba(255,255,255,0.06);
       border-radius: 5px;
       margin-top: 2px;
       max-width: 250px;
@@ -56,6 +57,7 @@
   <h1>
     <a href="#" onclick="resetQueryAndShowPopular(); return false;" style="color: inherit; text-decoration: none; cursor: pointer;">Spotify 検索</a>
   </h1>
+  <div class="floating-panel">
   <div class="search-box">
     <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." autocomplete="off" />
     <button onclick="search()">検索</button>
@@ -64,6 +66,7 @@
   <button onclick="showPopular()">人気の新着アルバム</button>
   <button onclick="showFavorites()">お気に入り一覧</button>
   <div id="results" class="results"></div>
+  </div>
   <div id="favorite-toast" style="display:none; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:12px 24px; border-radius:8px; font-size:16px; z-index:9999;">
     お気に入り登録しました
   </div>
