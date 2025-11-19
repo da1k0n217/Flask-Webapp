@@ -29,6 +29,27 @@
       position: relative;
       display: inline-block;
     }
+    /* 追加: お気に入りボタンの緑背景 */
+    .favorite-btn {
+      font-size: 22px;
+      background: #1DB954;
+      border: none;
+      cursor: pointer;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      margin-right: 4px;
+    }
+    .favorite-btn:disabled {
+      background: #ccc;
+      color: #fff;
+      cursor: default;
+    }
   </style>
 </head>
 <body>
@@ -43,7 +64,9 @@
   <button onclick="showPopular()">人気の新着アルバム</button>
   <button onclick="showFavorites()">お気に入り一覧</button>
   <div id="results" class="results"></div>
-
+  <div id="favorite-toast" style="display:none; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:12px 24px; border-radius:8px; font-size:16px; z-index:9999;">
+    お気に入り登録しました
+  </div>
   <script>
     // --- 検索履歴表示機能 ここから ---
     const input = document.getElementById('query');
@@ -136,10 +159,12 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-              <button onclick='addFavorite(${JSON.stringify(t)})'>❤</button>
-              <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
-            </div>
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>
+              <span class="heart-shape">♡</span>
+            </button>
+            <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
+          </div>
         `;
         container.innerHTML += html;
       });
@@ -163,10 +188,10 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-              <button onclick='addFavorite(${JSON.stringify(t)})'>❤</button>
-              <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
-            </div>
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
+            <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
+          </div>
         `;
         container.innerHTML += html;
       });
@@ -189,28 +214,40 @@
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
-              <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
-              <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
-            </div>
+            <p><a href="${t.external_url}" target="_blank" style="color:#1DB954;">Spotifyで開く（ログイン必須）</a></p>
+            <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
+            <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
+          </div>
         `;
         container.innerHTML += html;
       });
     }
 
-    async function addFavorite(track) {
+    // お気に入り登録時のトースト表示
+    function showFavoriteToast() {
+      const toast = document.getElementById('favorite-toast');
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 3000);
+    }
+
+    // ハート→チェックマーク変化＆お気に入り登録
+    async function addFavorite(btn, track) {
       try {
         const res = await fetch('/favorites', {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(track)
         });
-        return await res.json();
-        console.log('successfully added favorite');
+        await res.json();
+        // チェックマークに変更し、背景色はそのまま
+        btn.innerHTML = '<span style="color:#fff;font-size:22px;">✔</span>';
+        btn.disabled = true;
+        showFavoriteToast();
       } catch (e) {
         console.error('failed to add favorite', e);
-        console.log(track);
-        throw e;
+        alert('お気に入り登録に失敗しました');
       }
     }
 
