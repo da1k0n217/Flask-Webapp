@@ -7,16 +7,28 @@
 </head>
 <body>
     <h1>Music Player</h1>
-    <div id="player-container">
+    <div id="player-container" class="spotify-tab">
         {% if track %}
             {% if track.preview_url %}
-                <img src="{{ track.image }}" alt="{{ track.name }}" width="150">
-                <h2>{{ track.name }}</h2>
-                <p>{{ track.artist }}</p>
-                <audio id="audio-player" src="{{ track.preview_url }}"></audio>
-                <button onclick="document.getElementById('audio-player').play()">Play Preview</button>
-                <button onclick="document.getElementById('audio-player').pause()">Pause</button>
-                <p><a href="{{ track.external_url }}" target="_blank">Listen on Spotify</a></p>
+                    <img src="{{ track.image }}" alt="{{ track.name }}" width="150">
+                    <div class="spotify-info">
+                        <h2>{{ track.name }}</h2>
+                        <p>{{ track.artist }}</p>
+                        <audio id="audio-player" src="{{ track.preview_url }}"></audio>
+                        <div class="spotify-controls">
+                            <button id="play-toggle" class="play-btn" aria-label="Play">
+                                <!-- Play icon (will be switched to pause in JS) -->
+                                <svg id="play-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 3.868v16.264c0 .97 1.05 1.52 1.89 1.032l12.02-8.132c.84-.568.84-1.72 0-2.288L6.89 2.836C6.05 2.348 5 2.898 5 3.868z" fill="#fff"/></svg>
+                                <svg id="pause-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z" fill="#fff"/></svg>
+                            </button>
+                            <input id="progress" type="range" min="0" max="100" value="0" step="0.1">
+                            <div class="time-labels">
+                                <span id="current-time">0:00</span>
+                                <span id="duration">0:00</span>
+                            </div>
+                            <a class="button-link" href="{{ track.external_url }}" target="_blank">Listen on Spotify</a>
+                        </div>
+                    </div>
             {% else %}
                 <iframe style="border-radius: 12px" 
                         src="https://open.spotify.com/embed/track/{{ track.id }}?utm_source=generator" 
@@ -32,6 +44,12 @@
             <p>再生する曲が選択されていません。</p>
         {% endif %}
     </div>
-    <a href="/">検索ページに戻る</a>
+    <!-- Home icon link fixed to left side -->
+    <a href="/" class="home-link" aria-label="ホームに戻る">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M3 10.5L12 4l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V10.5z" fill="#111111" />
+        </svg>
+    </a>
+    <script src="/static/player.js" defer></script>
 </body>
 </html>

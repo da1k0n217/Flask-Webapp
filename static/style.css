@@ -3,6 +3,7 @@ body {
       background-color: #ffffff;
       color: black;
       text-align: center;
+      padding-bottom: 120px;
     }
     .search-box {
       margin: 30px;
@@ -45,6 +46,155 @@ body {
       padding: 10px;
       border-radius: 10px;
     }
+
+/* Spotify preview tab - fixed to bottom, keep original size */
+.spotify-tab {
+  position: fixed;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 86%;
+  max-width: 1280px;
+  background: #ffffff;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+  min-height: 56px;
+}
+
+.spotify-tab img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.spotify-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.spotify-info h2 {
+  font-size: 14px;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-info p {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotify-controls {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.spotify-controls audio {
+  display: none; /* keep native audio hidden; controls are buttons */
+}
+
+.play-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(180deg, #1ED760 0%, #17A44A 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(30,215,96,0.18);
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.play-btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 12px 28px rgba(30,215,96,0.22);
+}
+
+.spotify-controls .button-link {
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.9);
+  color: #1DB954;
+  text-decoration: none;
+  font-weight: 600;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.spotify-controls .button-link:hover {
+  transform: translateY(-2px);
+}
+
+.play-btn:active, .spotify-controls .button-link:active { transform: translateY(1px); }
+
+.spotify-controls input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 220px;
+  height: 4px;
+  background: linear-gradient(90deg, #1ED760 0%, #1ED760 50%, #e6e6e6 50%);
+  border-radius: 2px;
+  outline: none;
+}
+
+.spotify-controls input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  border: 2px solid #1ED760;
+}
+
+.time-labels {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+@media (max-width: 520px) {
+  .spotify-tab {
+    flex-direction: column;
+    width: calc(100% - 20px);
+    max-width: none;
+    align-items: center;
+  }
+  .spotify-tab img {
+    width: 120px;
+    height: 120px;
+  }
+  .spotify-info h2, .spotify-info p {
+    white-space: normal;
+    text-align: center;
+  }
+  .spotify-controls audio { display: block; width: 100%; }
+}
     img {
       width: 100%;
       border-radius: 10px;
@@ -80,3 +230,23 @@ body {
       font-size: 22px;
       pointer-events: none;
     }
+
+    /* Home icon fixed to left edge */
+    .home-link {
+      position: fixed;
+      left: 12px;
+      bottom: 26px;
+      width: 44px;
+      height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255,255,255,0.95);
+      border-radius: 10px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+      z-index: 1100;
+      text-decoration: none;
+      transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+    .home-link svg { display: block; }
+    .home-link:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(0,0,0,0.18); }
