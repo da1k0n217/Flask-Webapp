@@ -28,7 +28,6 @@ def close_db(e=None):
         db.close()
 
 def init_db():
-    """favorites テーブルを作成する。"""
     db = get_db()
     db.executescript("""
     CREATE TABLE IF NOT EXISTS favorites (
@@ -39,6 +38,11 @@ def init_db():
         preview_url TEXT,
         external_url TEXT,
         image_url TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS search_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        query TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
     """)
@@ -192,6 +196,28 @@ def delete_favorite(track_id):
         return jsonify({"error": "not found"}), 404
     # 削除成功
     return Response(status=204)
+
+@app.route('/search_history', methods=['POST'])
+def add_search_history():
+    data = request.get_json() or {}
+    query = data.get('query', '').strip()
+    if not query:
+        return jsonify({'error': 'query required'}), 400
+    db = get_db()
+    db.execute(
+        "INSERT INTO search_history (query) VALUES (?)",
+        (query,)
+    )
+    db.commit()
+    return jsonify({'status': 'ok'}), 201
+
+@app.route('/search_history', methods=['GET'])
+def get_search_history():
+    db = get_db()
+    rows = db.execute(
+        "SELECT query FROM search_history ORDER BY created_at DESC LIMIT 5"
+    ).fetchall()
+    return jsonify([row['query'] for row in rows])
 
 init_app(app)
 

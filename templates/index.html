@@ -4,18 +4,111 @@
   <link rel="stylesheet" href="/static/style.css" />
   <meta charset="UTF-8" />
   <title>ShareMusic</title>
+  <style>
+    .history-list {
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-top: 2px;
+      max-width: 250px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+      position: absolute;
+      left: 0; right: 0;
+      z-index: 10;
+    }
+    .history-item {
+      cursor: pointer;
+      padding: 4px 10px;
+    }
+    .history-item:hover {
+      background: #f0f0f0;
+    }
+    .search-box {
+      position: relative;
+      display: inline-block;
+    }
+  </style>
 </head>
 <body>
   <h1>Spotify 検索</h1>
   <div class="search-box">
-    <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." />
+    <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." autocomplete="off" />
     <button onclick="search()">検索</button>
+    <div id="historyList" class="history-list" style="display:none;"></div>
   </div>
   <button onclick="showPopular()">人気の新着アルバム</button>
   <button onclick="showFavorites()">お気に入り一覧</button>
   <div id="results" class="results"></div>
 
   <script>
+    // --- 検索履歴表示機能 ここから ---
+    const input = document.getElementById('query');
+    const historyDiv = document.getElementById('historyList');
+
+    async function fetchHistory() {
+      const res = await fetch('/search_history');
+      if (!res.ok) return [];
+      return await res.json();
+    }
+
+    async function showHistory() {
+      const history = await fetchHistory();
+      // 入力が空欄なら直近5件すべて表示
+      if (!input.value.trim() && history.length > 0) {
+        historyDiv.innerHTML = history
+          .map(item => `<div class="history-item">${item}</div>`)
+          .join('');
+        historyDiv.style.display = 'block';
+        return;
+      }
+      // 入力がある場合は部分一致で絞り込み
+      if (input.value.trim() && history.length > 0) {
+        const filtered = history.filter(item => item.includes(input.value));
+        if (filtered.length > 0) {
+          historyDiv.innerHTML = filtered
+            .map(item => `<div class="history-item">${item}</div>`)
+            .join('');
+          historyDiv.style.display = 'block';
+        } else {
+          historyDiv.style.display = 'none';
+          historyDiv.innerHTML = '';
+        }
+        return;
+      }
+      // 履歴がなければ非表示
+      historyDiv.style.display = 'none';
+      historyDiv.innerHTML = '';
+    }
+
+    historyDiv.addEventListener('click', function(e) {
+      if (e.target.classList.contains('history-item')) {
+        input.value = e.target.textContent;
+        historyDiv.style.display = 'none';
+        input.focus();
+      }
+    });
+
+    input.addEventListener('input', showHistory);
+    input.addEventListener('focus', showHistory);
+
+    document.addEventListener('click', function(e) {
+      if (!input.contains(e.target) && !historyDiv.contains(e.target)) {
+        historyDiv.style.display = 'none';
+      }
+    });
+
+    // 検索時に履歴保存
+    async function saveHistory(query) {
+      if (!query.trim()) return;
+      await fetch('/search_history', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({query})
+      });
+    }
+    // --- 検索履歴表示機能 ここまで ---
 
     window.onload = () => {
       showPopular();
@@ -23,6 +116,7 @@
 
     async function search() {
       const query = document.getElementById('query').value;
+      await saveHistory(query); // 履歴保存
       const res = await fetch(`/search?q=${encodeURIComponent(query)}`); //ここで検索した内容をapp.pyに送る
       const tracks = await res.json();
       const container = document.getElementById('results');
