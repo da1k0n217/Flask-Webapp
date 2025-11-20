@@ -5,54 +5,6 @@
   <meta charset="UTF-8" />
   <title>Recodify</title>
   <link rel="icon" type="image/svg+xml" href="/static/images/Group 2.svg" />
-  <style>
-    .history-list {
-      color: var(--text);
-      background: rgba(17,18,19,0.6);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 5px;
-      margin-top: 2px;
-      max-width: 250px;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      position: absolute;
-      left: 0; right: 0;
-      z-index: 10;
-    }
-    .history-item {
-      cursor: pointer;
-      padding: 4px 10px;
-    }
-    .history-item:hover {
-      background: #f0f0f0;
-    }
-    .search-box {
-      position: relative;
-      display: inline-block;
-    }
-    /* 追加: お気に入りボタンを白背景に変更 */
-    .favorite-btn {
-      font-size: 22px;
-      background: #ffffff;
-      border: none;
-      cursor: pointer;
-      color: #07110a;
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s, transform 0.12s;
-      margin-right: 4px;
-    }
-    .favorite-btn:disabled {
-      background: #ccc;
-      color: #fff;
-      cursor: default;
-    }
-  </style>
 </head>
 <body>
   <h1>
@@ -156,22 +108,22 @@
         return;
       }
 
-      tracks.forEach(t => {
+      let htmlContent = "";
+      tracks.forEach((t, index) => {
         const html = `
-          <div class="track">
+          <div class="track" style="animation-delay: ${index * 0.001}s">
             ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
             <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
-            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>
-              <span class="heart-shape">♡</span>
-            </button>
+            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
             <a href="/player?track_id=${t.id}" class="button-link">▶</a>
           </div>
         `;
-        container.innerHTML += html;
+        htmlContent += html;
       });
+      container.innerHTML = htmlContent;
     }
     
     async function showPopular() {
@@ -185,9 +137,10 @@
         return;
       }
 
-      albums.forEach(t => {
+      let htmlContent = "";
+      albums.forEach((t, index) => {
         const html = `
-          <div class="track">
+          <div class="track" style="animation-delay: ${index * 0.001}s">
             ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
@@ -197,8 +150,9 @@
             <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
           </div>
         `;
-        container.innerHTML += html;
+        htmlContent += html;
       });
+      container.innerHTML = htmlContent;
     }
 
     async function showFavorites() {
@@ -211,9 +165,10 @@
         return;
       }
 
-      tracks.forEach(t => {
+      let htmlContent = "";
+      tracks.forEach((t, index) => {
         const html = `
-          <div class="track">
+          <div class="track" style="animation-delay: ${index * 0.001}s">
             ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
             <h3>${t.name}</h3>
             <p>${t.artist}</p>
@@ -223,8 +178,9 @@
             <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
           </div>
         `;
-        container.innerHTML += html;
+        htmlContent += html;
       });
+      container.innerHTML = htmlContent;
     }
 
     // お気に入り登録時のトースト表示
