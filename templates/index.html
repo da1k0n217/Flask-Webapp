@@ -4,6 +4,7 @@
   <link rel="stylesheet" href="/static/style.css" />
   <meta charset="UTF-8" />
   <title>Recodify</title>
+  <link rel="icon" type="image/svg+xml" href="/static/images/Group 2.svg" />
   <style>
     .history-list {
       color: var(--text);
@@ -166,7 +167,7 @@
             <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>
               <span class="heart-shape">♡</span>
             </button>
-            <a href="/player?track_id=${t.id}" class="button-link">Playerで再生</a>
+            <a href="/player?track_id=${t.id}" class="button-link">▶</a>
           </div>
         `;
         container.innerHTML += html;
@@ -193,7 +194,7 @@
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
             <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
             <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
-            <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
+            <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
           </div>
         `;
         container.innerHTML += html;
@@ -219,7 +220,7 @@
             ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
             <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
             <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
-            <a href="/player?track_id=${t.track_id}" class="button-link">Playerで再生</a>
+            <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
           </div>
         `;
         container.innerHTML += html;
