@@ -25,11 +25,15 @@ body {
     }
     input[type="text"] {
       width: 250px;
-      padding: 8px;
+      padding: 11px;
       border-radius: 5px;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.5);
       background: rgba(255,255,255,0.02);
       color: var(--text);
+      transition: background 200ms ease;
+    }
+      input[type="text"]:hover {
+        background: rgba(255,255,255,0.1);
     }
     button {
       padding: 8px 15px;
@@ -38,6 +42,10 @@ body {
       background: var(--accent);
       color: #07110a;
       cursor: pointer;
+      transition: background 300ms ease;
+    }
+    button:hover {
+      background: rgba(182, 180, 180, 0.8);
     }
     .button-link {
       display: inline-block;
@@ -86,26 +94,32 @@ body {
       color: var(--muted);
     }
 
+    .search-input-wrapper {
+      position: relative;
+      display: inline-block;
+    }
     .history-list {
       color: var(--text);
-      background: rgba(17,18,19,0.6);
+      background: rgba(17,18,19,0.9);
       border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 5px;
+      border-radius: 10px;
       margin-top: 2px;
-      max-width: 250px;
-      margin-left: auto;
-      margin-right: auto;
       text-align: left;
       position: absolute;
-      left: 0; right: 0;
+      left: 0;
+      width: 100%;
       z-index: 10;
+      box-sizing: border-box;
     }
     .history-item {
       cursor: pointer;
       padding: 4px 10px;
+      transition: background, border-radius;
     }
     .history-item:hover {
       background: #f0f0f0;
+      border-radius: 10px;
+      color:#000000;
     }
     .search-box {
       position: relative;
@@ -267,6 +281,10 @@ body {
   color: var(--muted);
 }
 
+.s-player {
+  
+}
+
 @media (max-width: 520px) {
   .spotify-tab {
     flex-direction: column;
@@ -355,4 +373,43 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  border: 4px solid rgba(255, 255, 255, 0.582);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border-left-color: #4226c2;
+  animation: spin 0.6s linear infinite;
+  margin: 40px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.rotate-image {
+  position: absolute;
+  left: 23.5%;
+  top: 33%;
+  width: 250px;
+  animation: spin 4s linear infinite;
+}
+
+.pin-image {
+  position: absolute;
+  left: 0;
+  right: 0;
 }

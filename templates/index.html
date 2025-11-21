@@ -12,17 +12,24 @@
   </h1>
   <div class="floating-panel">
   <div class="search-box">
-    <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." autocomplete="off" />
+    <div class="search-input-wrapper">
+      <input type="text" id="query" placeholder="曲名やアーティスト名を入力..." autocomplete="off" />
+      <div id="historyList" class="history-list" style="display:none;"></div>
+    </div>
     <button onclick="search()">検索</button>
-    <div id="historyList" class="history-list" style="display:none;"></div>
   </div>
   <button onclick="showPopular()">人気の新着アルバム</button>
   <button onclick="showFavorites()">お気に入り一覧</button>
+  <div id="loading" style="display: none;">
+    <div class="loading-spinner"></div>
+  </div>
   <div id="results" class="results"></div>
   </div>
   <div id="favorite-toast" style="display:none; position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#333; color:#fff; padding:12px 24px; border-radius:8px; font-size:16px; z-index:9999;">
     お気に入り登録しました
   </div>
+
+
   <script>
     // --- 検索履歴表示機能 ここから ---
     const input = document.getElementById('query');
@@ -91,6 +98,15 @@
     }
     // --- 検索履歴表示機能 ここまで ---
 
+    function showLoading() {
+      document.getElementById('results').innerHTML = '';
+      document.getElementById('loading').style.display = 'block';
+    }
+
+    function hideLoading() {
+      document.getElementById('loading').style.display = 'none';
+    }
+
     window.onload = () => {
       showPopular();
     };
@@ -98,89 +114,117 @@
     async function search() {
       const query = document.getElementById('query').value;
       await saveHistory(query); // 履歴保存
-      const res = await fetch(`/search?q=${encodeURIComponent(query)}`); //ここで検索した内容をapp.pyに送る
-      const tracks = await res.json();
-      const container = document.getElementById('results');
-      container.innerHTML = "";
+      
+      showLoading();
+      try {
+        const res = await fetch(`/search?q=${encodeURIComponent(query)}`); //ここで検索した内容をapp.pyに送る
+        const tracks = await res.json();
+        hideLoading();
+        
+        const container = document.getElementById('results');
+        container.innerHTML = "";
 
-      if (tracks.error) {
-        container.innerHTML = `<p style="color:red;">${tracks.error}</p>`;
-        return;
+        if (tracks.error) {
+          container.innerHTML = `<p style="color:red;">${tracks.error}</p>`;
+          return;
+        }
+
+        let htmlContent = "";
+        tracks.forEach((t, index) => {
+          const html = `
+            <div class="track" style="animation-delay: ${index * 0.001}s">
+              ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+              <h3>${t.name}</h3>
+              <p>${t.artist}</p>
+              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
+              <a href="/player?track_id=${t.id}" class="button-link">▶</a>
+            </div>
+          `;
+          htmlContent += html;
+        });
+        container.innerHTML = htmlContent;
+      } catch (e) {
+        hideLoading();
+        console.error(e);
+        document.getElementById('results').innerHTML = '<p>エラーが発生しました</p>';
       }
-
-      let htmlContent = "";
-      tracks.forEach((t, index) => {
-        const html = `
-          <div class="track" style="animation-delay: ${index * 0.001}s">
-            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
-            <h3>${t.name}</h3>
-            <p>${t.artist}</p>
-            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
-            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
-            <a href="/player?track_id=${t.id}" class="button-link">▶</a>
-          </div>
-        `;
-        htmlContent += html;
-      });
-      container.innerHTML = htmlContent;
     }
     
     async function showPopular() {
-      const res = await fetch('/popular');
-      const albums = await res.json();
-      const container = document.getElementById('results');
-      container.innerHTML = "";
+      showLoading();
+      try {
+        const res = await fetch('/popular');
+        const albums = await res.json();
+        hideLoading();
 
-      if (albums.error) {
-        container.innerHTML = `<p style="color:red;">${albums.error}</p>`;
-        return;
+        const container = document.getElementById('results');
+        container.innerHTML = "";
+
+        if (albums.error) {
+          container.innerHTML = `<p style="color:red;">${albums.error}</p>`;
+          return;
+        }
+
+        let htmlContent = "";
+        albums.forEach((t, index) => {
+          const html = `
+            <div class="track" style="animation-delay: ${index * 0.001}s">
+              ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+              <h3>${t.name}</h3>
+              <p>${t.artist}</p>
+              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
+              <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
+            </div>
+          `;
+          htmlContent += html;
+        });
+        container.innerHTML = htmlContent;
+      } catch (e) {
+        hideLoading();
+        console.error(e);
+        document.getElementById('results').innerHTML = '<p>エラーが発生しました</p>';
       }
-
-      let htmlContent = "";
-      albums.forEach((t, index) => {
-        const html = `
-          <div class="track" style="animation-delay: ${index * 0.001}s">
-            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
-            <h3>${t.name}</h3>
-            <p>${t.artist}</p>
-            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
-            <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
-            <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
-          </div>
-        `;
-        htmlContent += html;
-      });
-      container.innerHTML = htmlContent;
     }
 
     async function showFavorites() {
-      const tracks = await fetchFavorites();
-      const container = document.getElementById('results');
-      container.innerHTML = "";
+      showLoading();
+      try {
+        const tracks = await fetchFavorites();
+        hideLoading();
 
-      if (!tracks || tracks.length === 0) {
-        container.innerHTML = "<p>お気に入りはまだありません。</p>";
-        return;
+        const container = document.getElementById('results');
+        container.innerHTML = "";
+
+        if (!tracks || tracks.length === 0) {
+          container.innerHTML = "<p>お気に入りはまだありません。</p>";
+          return;
+        }
+
+        let htmlContent = "";
+        tracks.forEach((t, index) => {
+          const html = `
+            <div class="track" style="animation-delay: ${index * 0.001}s">
+              ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+              <h3>${t.name}</h3>
+              <p>${t.artist}</p>
+              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
+              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
+              <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
+            </div>
+          `;
+          htmlContent += html;
+        });
+        container.innerHTML = htmlContent;
+      } catch (e) {
+        hideLoading();
+        console.error(e);
+        document.getElementById('results').innerHTML = '<p>エラーが発生しました</p>';
       }
-
-      let htmlContent = "";
-      tracks.forEach((t, index) => {
-        const html = `
-          <div class="track" style="animation-delay: ${index * 0.001}s">
-            ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
-            <h3>${t.name}</h3>
-            <p>${t.artist}</p>
-            ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-            <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
-            <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
-            <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
-          </div>
-        `;
-        htmlContent += html;
-      });
-      container.innerHTML = htmlContent;
     }
 
     // お気に入り登録時のトースト表示
