@@ -135,6 +135,19 @@ def search():
             "image": item["album"]["images"][1]["url"] if item["album"]["images"] else None
         })
 
+    # 一致率でソート（クエリ文字列との完全一致度が高い順）
+    query_lower = query.lower()
+    tracks.sort(key=lambda t: (
+        # 第1優先度：曲名での完全一致（最初から始まるか）
+        not t["name"].lower().startswith(query_lower),
+        # 第2優先度：アーティスト名での完全一致（最初から始まるか）
+        not t["artist"].lower().startswith(query_lower),
+        # 第3優先度：曲名に含まれているか
+        query_lower not in t["name"].lower(),
+        # 第4優先度：アーティスト名に含まれているか
+        query_lower not in t["artist"].lower()
+    ))
+
     return jsonify(tracks)
 
 @app.route('/popular', methods=["GET"])
