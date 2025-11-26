@@ -249,6 +249,11 @@ def add_search_history():
     if not query:
         return jsonify({'error': 'query required'}), 400
     db = get_db()
+    # 同じクエリが既に存在する場合は削除してから新しく追加（最新を上に）
+    db.execute(
+        "DELETE FROM search_history WHERE query = ?",
+        (query,)
+    )
     db.execute(
         "INSERT INTO search_history (query) VALUES (?)",
         (query,)
