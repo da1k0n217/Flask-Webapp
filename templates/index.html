@@ -111,8 +111,11 @@
       showPopular();
     };
 
-    async function search() {
-      const query = document.getElementById('query').value;
+    async function search(artistName) {
+      const query = artistName || document.getElementById('query').value;
+      if (!query) return;
+
+      document.getElementById('query').value = query;
       await saveHistory(query); // 履歴保存
       
       showLoading();
@@ -135,9 +138,7 @@
             <div class="track" style="animation-delay: ${index * 0.001}s">
               ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
               <h3>${t.name}</h3>
-              <p>${t.artist}</p>
-              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <p class="goartist" onclick='search(${JSON.stringify(t.artist)})'>${t.artist}</p>
               <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
               <a href="/player?track_id=${t.id}" class="button-link">▶</a>
             </div>
@@ -173,9 +174,7 @@
             <div class="track" style="animation-delay: ${index * 0.001}s">
               ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
               <h3>${t.name}</h3>
-              <p>${t.artist}</p>
-              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <p class="goartist" onclick='search(${JSON.stringify(t.artist)})'>${t.artist}</p>
               <button class="favorite-btn" onclick='addFavorite(this, ${JSON.stringify(t)})'>♡</button>
               <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
             </div>
@@ -210,9 +209,7 @@
             <div class="track" style="animation-delay: ${index * 0.001}s">
               ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
               <h3>${t.name}</h3>
-              <p>${t.artist}</p>
-              ${t.preview_url ? `<audio controls src="${t.preview_url}"></audio>` : `<p>プレビューなし</p>`}
-              <p><a href="${t.external_url}" target="_blank" style="color:#ffffff;">Spotifyで開く（ログイン必須）</a></p>
+              <p class="goartist" onclick='search(${JSON.stringify(t.artist)})'>${t.artist}</p>
               <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
               <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
             </div>

@@ -7,8 +7,10 @@
 </head>
 <body>
     <img src="/static/images/background.png" alt="bg" class="bg-image">
-    <img src="/static/images/hari.png" alt="pin" class="pin-image">
-    <img src="/static/images/rotate.png" alt="rotate" class="rotate-image">
+    <div class="record-container">
+        <img src="/static/images/hari.png" alt="pin" class="pin-image">
+        <img src="/static/images/rotate.png" alt="rotate" class="rotate-image">
+    </div>
     <div id="player-container" class="spotify-tab">
         {% if track %}
             {% if track.preview_url %}
