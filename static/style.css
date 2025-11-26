@@ -432,3 +432,31 @@ body {
   object-fit: cover;
   z-index: -1;
 }
+
+/* Top Scroll Button */
+#scrollTopBtn {
+  display: none;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 99;
+  font-size: 18px;
+  border: none;
+  outline: none;
+  background-color: var(--accent);
+  color: #07110a;
+  cursor: pointer;
+  padding: 0;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: background-color 0.3s, transform 0.3s;
+  animation : fadeIn 0.5s ease forwards;
+  align-items: center;
+  justify-content: center;
+}
+
+#scrollTopBtn:hover {
+  background-color: rgba(182, 180, 180, 0.8)
+}
