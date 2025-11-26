@@ -460,3 +460,49 @@ body {
 #scrollTopBtn:hover {
   background-color: rgba(182, 180, 180, 0.8)
 }
+
+/* グラデーションピッカー（マイページ右上） */
+.gradient-picker {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2000;
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  align-items: center;
+  background: rgba(0,0,0,0.12);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px);
+}
+
+.gradient-swatch {
+  width: 46px;
+  height: 46px;
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.12);
+  cursor: pointer;
+  padding: 0;
+  transition: transform .12s ease, box-shadow .12s ease;
+  outline: none;
+}
+
+.gradient-swatch:hover {
+  transform: translateY(-4px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.gradient-reset {
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  border: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.gradient-reset:hover {
+  transform: translateY(-2px);
+}

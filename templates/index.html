@@ -10,6 +10,10 @@
   <h1>
     <a href="#" onclick="resetQueryAndShowPopular(); return false;" style="color: inherit; text-decoration: none; cursor: pointer;"><img src="./static/images/Recodify.svg" alt="Recodify" class="icon"></a>
   </h1>
+
+  <!-- グラデーションピッカー（右上に固定、最初から表示） -->
+  <div id="gradientPicker" class="gradient-picker" aria-hidden="false"></div>
+  
   <div class="floating-panel">
   <div class="search-box">
     <div class="search-input-wrapper">
@@ -191,39 +195,41 @@
     }
 
     async function showFavorites() {
-      showLoading();
-      try {
-        const tracks = await fetchFavorites();
-        hideLoading();
+      // マイページを開いたらグラデーションピッカーを表示
+      showGradientPicker();
+       showLoading();
+       try {
+         const tracks = await fetchFavorites();
+         hideLoading();
 
-        const container = document.getElementById('results');
-        container.innerHTML = "";
+         const container = document.getElementById('results');
+         container.innerHTML = "";
 
-        if (!tracks || tracks.length === 0) {
-          container.innerHTML = "<p>お気に入りはまだありません。</p>";
-          return;
-        }
+         if (!tracks || tracks.length === 0) {
+           container.innerHTML = "<p>お気に入りはまだありません。</p>";
+           return;
+         }
 
-        let htmlContent = "";
-        tracks.forEach((t, index) => {
-          const html = `
-            <div class="track" style="animation-delay: ${index * 0.001}s">
-              ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
-              <h3>${t.name}</h3>
-              <p class="goartist" onclick='search(${JSON.stringify(t.artist)})'>${t.artist}</p>
-              <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
-              <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
-            </div>
-          `;
-          htmlContent += html;
-        });
-        container.innerHTML = htmlContent;
-      } catch (e) {
-        hideLoading();
-        console.error(e);
-        document.getElementById('results').innerHTML = '<p>エラーが発生しました</p>';
-      }
-    }
+         let htmlContent = "";
+         tracks.forEach((t, index) => {
+           const html = `
+             <div class="track" style="animation-delay: ${index * 0.001}s">
+               ${t.image ? `<img src="${t.image}" alt="${t.name}">` : ""}
+               <h3>${t.name}</h3>
+               <p class="goartist" onclick='search(${JSON.stringify(t.artist)})'>${t.artist}</p>
+               <button onclick="removeFavorite('${t.track_id}').then(() => showFavorites())">削除</button>
+               <a href="/player?track_id=${t.track_id}" class="button-link">▶</a>
+             </div>
+           `;
+           htmlContent += html;
+         });
+         container.innerHTML = htmlContent;
+       } catch (e) {
+         hideLoading();
+         console.error(e);
+         document.getElementById('results').innerHTML = '<p>エラーが発生しました</p>';
+       }
+     }
 
     // お気に入り登録時のトースト表示
     function showFavoriteToast() {
@@ -299,6 +305,67 @@
     function scrollToTop() {
       window.scrollTo({top: 0, behavior: 'smooth'});
     }
-  </script>
-</body>
+
+    // --- グラデーション選択機能 ---
+    const gradients = [
+      "linear-gradient(135deg,#000428 0%,#004e92 100%)",
+      "linear-gradient(135deg,#ff7e5f 0%,#feb47b 100%)",
+      "linear-gradient(135deg,#00c6ff 0%,#0072ff 100%)",
+      "linear-gradient(135deg,#7b4397 0%,#dc2430 100%)",
+      "linear-gradient(135deg,#11998e 0%,#38ef7d 100%)",
+      "linear-gradient(135deg,#f7971e 0%,#ffd200 100%)",
+      "linear-gradient(135deg,#2b5876 0%,#4e4376 100%)",
+      "linear-gradient(135deg,#e65c00 0%,#f9d423 100%)"
+    ];
+
+    function showGradientPicker() {
+      const picker = document.getElementById('gradientPicker');
+      if (!picker) return;
+      picker.innerHTML = '';
+      gradients.forEach(g => {
+        const sw = document.createElement('button');
+        sw.className = 'gradient-swatch';
+        sw.type = 'button';
+        sw.title = '背景に適用';
+        sw.style.background = g;
+        sw.onclick = () => { applyGradient(g); };
+        picker.appendChild(sw);
+      });
+      // 追加で「デフォルトに戻す」ボタン
+      const reset = document.createElement('button');
+      reset.className = 'gradient-reset';
+      reset.textContent = 'デフォルトに戻す';
+      reset.onclick = () => { applyGradient(''); localStorage.removeItem('recodify-gradient'); };
+      picker.appendChild(reset);
+      picker.style.display = 'flex';
+    }
+
+    function applyGradient(grad) {
+      if (grad) {
+        document.documentElement.style.background = grad;
+        document.body.style.background = grad;
+        localStorage.setItem('recodify-gradient', grad);
+      } else {
+        // 元のCSS変数に戻す（style.css :root の --bg を使っている場合はその値に戻る）
+        document.documentElement.style.background = '';
+        document.body.style.background = '';
+      }
+    }
+
+    function loadSavedGradient() {
+      const g = localStorage.getItem('recodify-gradient');
+      if (g) applyGradient(g);
+    }
+
+    // ページ読み込み時に保存済みグラデーションを適用し、ピッカーを初期表示し、ピッカーを初期表示
+    window.addEventListener('load', () => {
+      loadSavedGradient();
+      showGradientPicker();radientPicker();
+    });
+    // --- グラデーション選択機能 終わり ------ グラデーション選択機能 終わり ---
+  </script>  </script>
+
+
+
+</html></body></body>
 </html>
